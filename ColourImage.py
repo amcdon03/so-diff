@@ -11,10 +11,10 @@ class ColourImage(GUIconnect):
             if values[0].strip() != "ColourImage":
                 raise NotImplementedError("invalid input; choices are binary, greyscale or colour")
 
-            for items in values[1:]:
-                new_line = values.split(",")
-                for x in new_line:
-                    self._data.append(x)
+            for line in values[1:]:
+                new_line = line.split(",")
+                for item in new_line:
+                    self._data.append(item)
 
     def _determineColorValue(self,r,g,b):
         return ("#%02x%02x%02x" % (r,g,b))
