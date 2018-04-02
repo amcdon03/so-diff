@@ -4,13 +4,14 @@ from GUIconnect import GUIconnect
 
 from GreyScaleImage import GreyScaleImage
 from ColourImage import ColourImage
+from BinaryImage import BinaryImage
 
 from tkinter import filedialog
 
 ## GUI for binary image creator
 class BinaryConverter(Frame, GUIconnect):
     
-    #CANVAS_SIZE = 500  # Square Region size used to display images 
+    CANVAS_SIZE = 500  # Square region size used to display images
     # constructor
     def __init__(self, master=None):
         super(BinaryConverter, self).__init__()
@@ -21,13 +22,13 @@ class BinaryConverter(Frame, GUIconnect):
         self.text = ""
               
         self.master.title("Binary Image Creator")
-        
+
+        # Create canvas area
         self.canvasLeft=Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE)
         self.canvasRight=Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE)
 
-        
-        self.canvas1.grid(row=3, column=0, columnspan=1)
-        self.canvas2.grid(row=3, column=1, columnspan=3)
+        self.canvasLeft.grid(row=3, column=0, columnspan=1)
+        self.canvasRight.grid(row=3, column=1, columnspan=3)
         self._addProcessWidgets()
 
         self._imagedata = None     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage. 
@@ -37,7 +38,7 @@ class BinaryConverter(Frame, GUIconnect):
 
     def _openFile(self):
         
-        self.filename =  filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("all files","*.*")))
+        self.filename =  filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
         self.label1.config(text=self.filename)  
          
         if self.filename != "":
@@ -53,7 +54,7 @@ class BinaryConverter(Frame, GUIconnect):
 
 
     def _chooseProcess(self):
-        threshold = self.entry1.get()
+        threshold = self.entry.get()
         if chosenProcess[0].upper() == "B":
             pass
         elif chosenProcess[0].upper() == "G":
@@ -80,11 +81,13 @@ class BinaryConverter(Frame, GUIconnect):
     def _addProcessWidgets(self):
         self.label1 = Label(text="No file selected yet")
         self.label2 = Label(text="Select Threshold (0-255)")
-        self.entry1 = Entry(self)
-        self.processBtn = Button(self.master, text="Process", command=GUIconnect.binariseImage(self, 97))
+        self.entry = Entry(self, width=4)
+        self.processBtn = Button(self.master, text="Process", command=GUIconnect.binariseImage(self, entry.get()))
+
         self.label1.grid(row=1, column=0)
         self.label2.grid(row=1, column=1)
-        self.entry1.grid(row=1, column=2)
+
+        self.entry.grid(row=1, column=2)
         self.processBtn.grid(row=1, column=3)
 
                
