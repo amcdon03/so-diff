@@ -34,7 +34,7 @@ class BinaryConverter(Frame, GUIconnect):
 
         self._addProcessWidgets()
 
-        self._imagedata = [GreyScaleImage or ColourImage]     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage.
+        self._imagedata = [GreyScaleImage, ColourImage]     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage.
 		                                                      # This will not change until a new data file is loaded.
         self._processedData = BinaryImage() # Store here a BinaryImage object that is the result of binarising the loaded data.
         self._pixelSize = 2        # This is used to size the pixels in our display. See method _display()
@@ -56,14 +56,14 @@ class BinaryConverter(Frame, GUIconnect):
             values = inFile.readlines() #YES should this be readlines. Process here or in ??image.py file?
             self.imagedata = values # OR
 
-            #self._imagedata = GreyScaleImage(file)
+            #self._imagedata = GreyScaleImage(inFile)
             #self._display(self.canvasLeft, self._imagedata.dataForDisplay())
-            #self._imagedata = ColourImage(file)
+            #self._imagedata = ColourImage(inFile)
             #self._display(self.canvasLeft, self._imagedata.dataForDisplay())
         return values
 
 
-    def _chooseProcess(self):
+    """def _chooseProcess(self):
         threshold = GUIconnect.getThreshold(self)
         if chosenProcess[0].upper() == "B":
             pass
@@ -72,7 +72,7 @@ class BinaryConverter(Frame, GUIconnect):
         elif chosenProcess[0].upper() == "C":
             ColourImage(self)
         else:
-            print("invalid input; choices are binary, greyscale or colour")
+            print("invalid input; choices are binary, greyscale or colour") """
 
     
     def _addMenu(self):
@@ -103,7 +103,7 @@ class BinaryConverter(Frame, GUIconnect):
           for pt in inputPts:
               [x,y,v]=pt      # x and y are both integers.
                               # v is a string, which comes from the output of _determineColorValue
-              self.canvasRight.create_rectangle(s*x, s*y, s*(x+1), s*(y+1), fill=v, width=0)
+              canvas.create_rectangle(s*x, s*y, s*(x+1), s*(y+1), fill=v, width=0)
               
 
   

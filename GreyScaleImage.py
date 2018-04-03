@@ -4,7 +4,7 @@ from BinaryImage import BinaryImage
 class GreyScaleImage(GUIconnect):
 
     def __init__(self, filename):
-        self._data = int([])  ###convert to int() here??
+        self._data = []
 
         with open(filename, "r") as inFile:
             values = inFile.readlines()  # Process here?
@@ -22,10 +22,10 @@ class GreyScaleImage(GUIconnect):
 
     def getThreshold(self):
         pass
-        # t = (r+g+b)/items   # ie. avg of all intensity values for the image
+        # t = avg of all values (v) #intensity for the image
         ### convert to int() here??
 
-        # return t
+        # return threshold
 
     def binariseImage(self, threshold):
         pass
@@ -38,4 +38,4 @@ class GreyScaleImage(GUIconnect):
         pass
         # This method returns the data in a form that can be displayed.
         # It will be passed as the parameter "inputPts" to the method _display() in the class BinaryConverter
-        # return self._data
+        # return self._data ie: int(x), int(y), str(b)

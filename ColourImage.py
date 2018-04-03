@@ -16,14 +16,14 @@ class ColourImage(GUIconnect):
                 for item in new_line:
                     self._data.append(item)
 
-    def _determineColorValue(self,r,g,b):
-        return ("#%02x%02x%02x" % (r,g,b))
+    def _determineColorValue(self, r, g, b):
+        return ("#%02x%02x%02x" % (r, g, b))
 
     def getThreshold(self):
         pass
-        # t = avg of all values (v) #intensity for the image
+        # t = (r+g+b)/items   # ie. avg of all rgb values for the image
         ### convert to int() here??
-        # return t
+        # return threshold
 
     def binariseImage(self, threshold):
         pass
@@ -35,7 +35,7 @@ class ColourImage(GUIconnect):
     def dataForDisplay(self):
         # This method returns the data in a form that can be displayed.
         # It will be passed as the parameter "inputPts" to the method _display() in the class BinaryConverter
-        return self._data
+        # return self._data ie: int(x), int(y), str(b)
 
 
 
