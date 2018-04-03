@@ -18,7 +18,7 @@ class BinaryConverter(Frame, GUIconnect):
     def __init__(self, master=None):
 
         Frame.__init__(self, master)
-        self.grid()  # use the grid manager
+        self.grid(sticky=N+S+E+W)  # use the grid manager
         self._addMenu()
         self.text = ""
               
@@ -26,16 +26,16 @@ class BinaryConverter(Frame, GUIconnect):
         self.master.minsize(width=CANVAS_SIZE*2, height=CANVAS_SIZE)
 
         # Create canvas area
-        self.canvasLeft = Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE)
-        self.canvasRight = Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE)
+        self.canvasLeft = Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE, bg="#FFAAFF")
+        self.canvasRight = Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE, bg="#AAAAFF")
 
-        self.canvasLeft.grid(row=2, column=0, columnspan=3)
-        self.canvasRight.grid(row=2, column=3, columnspan=3)
+        self.canvasLeft.grid(row=1, column=0, columnspan=3)
+        self.canvasRight.grid(row=1, column=3, columnspan=3)
 
         self._addProcessWidgets()
 
         self._imagedata = [GreyScaleImage or ColourImage]     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage.
-		                           # This will not change until a new data file is loaded.
+		                                                      # This will not change until a new data file is loaded.
         self._processedData = BinaryImage() # Store here a BinaryImage object that is the result of binarising the loaded data.
         self._pixelSize = 2        # This is used to size the pixels in our display. See method _display()
 
@@ -90,12 +90,12 @@ class BinaryConverter(Frame, GUIconnect):
         self.file_label = Label(text="No file selected yet")
         self.threshold_label = Label(text="Select Threshold (0-255)")
         self.entry_area = Entry(self.master, width=5)
-        self.process_button = Button(self.master, text="Process", command=self._chooseProcess)
+        self.process_button = Button(self.master, text="Process", command=self.binariseImage)
 
-        self.file_label.grid(row=1, column=0)
-        self.threshold_label.grid(row=1, column=3)
-        self.entry_area.grid(row=1, column=4, sticky="e", padx=10)
-        self.process_button.grid(row=1, column=5, sticky="w")
+        self.file_label.grid(row=0, column=0, columnspan=3)
+        self.threshold_label.grid(row=0, column=3, sticky="e")
+        self.entry_area.grid(row=0, column=4, sticky="e", padx=5)
+        self.process_button.grid(row=0, column=5, sticky="w")
 
                
     def _display(self, canvas, inputPts): 
@@ -103,7 +103,7 @@ class BinaryConverter(Frame, GUIconnect):
           for pt in inputPts:
               [x,y,v]=pt      # x and y are both integers.
                               # v is a string, which comes from the output of _determineColorValue
-              canvas.create_rectangle(s*x, s*y, s*(x+1), s*(y+1), fill=v, width=0)
+              self.canvasRight.create_rectangle(s*x, s*y, s*(x+1), s*(y+1), fill=v, width=0)
               
 
   
