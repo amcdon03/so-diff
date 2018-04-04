@@ -35,7 +35,7 @@ class BinaryConverter(Frame, GUIconnect):
         self._addProcessWidgets()
 
         self._imagedata = [GreyScaleImage, ColourImage]     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage.
-		                                                      # This will not change until a new data file is loaded.
+                                                            # This will not change until a new data file is loaded.
         self._processedData = BinaryImage() # Store here a BinaryImage object that is the result of binarising the loaded data.
         self._pixelSize = 2        # This is used to size the pixels in our display. See method _display()
 

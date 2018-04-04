@@ -33,10 +33,7 @@ class ColourImage(GUIconnect):
         # return ???
 
     def dataForDisplay(self):
+        pass
         # This method returns the data in a form that can be displayed.
         # It will be passed as the parameter "inputPts" to the method _display() in the class BinaryConverter
         # return self._data ie: int(x), int(y), str(b)
-
-
-
- 
