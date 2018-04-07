@@ -4,7 +4,7 @@ from BinaryImage import BinaryImage
 class ColourImage(GUIconnect):
 
     def __init__(self, filename):
-        self._data = int([])  ###convert to int() here??
+        self._data = []  ###convert to int() here?? No!!
 
         with open(filename, "r") as inFile:
             values = inFile.readlines() #Process here?
