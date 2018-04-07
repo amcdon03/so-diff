@@ -40,22 +40,24 @@ class BinaryConverter(Frame, GUIconnect):
 
 
 
-
-
-
-
     # Methods for widgets available
 
     def _openFile(self):
-        
         self.filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
         self.file_label.config(text=self.filename)
 
-        """if self.filename != "":
-            self.text = self._readFile(self.filename) 
-            # Putting this here returns 'TypeError: expected str, bytes or os.PathLike object, not _io.TextIOWrapper'
-            in the GreyScaleImage.py file  """
+        self._imagedata = GreyScaleImage(self.filename)
+        self._display(self.canvasLeft, self._imagedata.dataForDisplay())
+        self._imagedata = ColourImage(self._filename)
+        self._display(self.canvasLeft, self._imagedata.dataForDisplay())
          
+
+    def _saveFile(self):
+        self.filename = filedialog.asksaveasfilename()
+
+
+
+
 
     def _readFile(self, filename):
         with open(filename, "r") as inFile:
