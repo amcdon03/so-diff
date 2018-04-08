@@ -1,5 +1,6 @@
-from tkinter import Frame, Canvas, Label, Button, Entry, Menu, IntVar  #include more tkinter widgets here
+from tkinter import Frame, Canvas, Label, Button, Entry, Menu, IntVar, TclError  #include more tkinter widgets here
 from tkinter import filedialog
+from tkinter.messagebox import showerror
 
 from GreyScaleImage import GreyScaleImage
 from ColourImage import ColourImage
@@ -42,46 +43,36 @@ class BinaryConverter(Frame):
     # Methods for widgets available
 
     def _openFile(self):
-        values = []
-
-        self.filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
-        self.file_label.config(text=self.filename)
-
-        with open(self.filename, "r") as inFile:
-            lines = inFile.readlines()
-
-            for line in lines[1:]:
-                itemList = line.split(",")
-                for each_item in itemList:
-                    values.append(int(each_item))
-
-            if lines[0].strip() == "Greyscale Image":
-                self._imagedata = GreyScaleImage(values)
-            elif lines[0].strip() == "Colour Image":
-                self._imagedata = ColourImage(values)
+        try:
+            values = []
+            filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
+            self.file_label.config(text=filename)
 
 
+            with open(filename, "r") as inFile:
+                lines = inFile.readlines()
 
-        self._display(self.canvasLeft, self._imagedata.dataForDisplay())
-        self.threshValue.set(self._imagedata.getThreshold())
+                for line in lines[1:]:
+                    itemList = line.split(",")
+                    for each_item in itemList:
+                        values.append(int(each_item))
+
+                if lines[0].strip() == "Greyscale Image":
+                    self._imagedata = GreyScaleImage(values)
+                elif lines[0].strip() == "Colour Image":
+                    self._imagedata = ColourImage(values)
+
+            self._display(self.canvasLeft, self._imagedata.dataForDisplay())
+            self.threshValue.set(self._imagedata.getThreshold())
+        except:
+            showerror("Ooops", "Oh fish! Something wasn't right!! Please bear with us")
 
     def _saveFile(self):
-        self.filename = filedialog.asksaveasfilename(initialdir = "/", title="Please select a filename for saving:", filetypes=(("Text files", ".txt"),("All files", "*.*")), defaultextension=".txt")
-
-
-
-
-
-    def _readFile(self, filename):
-        with open(filename, "r") as inFile:
-            lines = inFile.readlines() #YES should this be readlines. Process here or in ??image.py file?
-            if lines[0].strip() == "Greyscale Image":
-                self._imagedata = GreyScaleImage(inFile)
-                self._display(self.canvasLeft, self._imagedata.dataForDisplay())
-            elif lines[0].strip() == "Colour Image":
-                self._imagedata = ColourImage(inFile)
-                self._display(self.canvasLeft, self._imagedata.dataForDisplay())
-        self._display(self.canvasLeft, self._imagedata.dataForDisplay())
+        try:
+            filename = filedialog.asksaveasfilename(initialdir = "/", title="Please select a filename for saving:", filetypes=(("Text files", ".txt"),("All files", "*.*")), defaultextension=".txt")
+            self._processedData.saveImage(filename)
+        except:
+            showerror("Ooops", "Oh fish! Something wasn't right!! Please bear with us")
 
 
     def _addMenu(self):
@@ -90,7 +81,7 @@ class BinaryConverter(Frame):
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
         self.filemenu.add_command(label="Load", command = self._openFile)
-        self.filemenu.add_command(label="Save")
+        self.filemenu.add_command(label="Save", command = self._saveFile)
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=quit)
 
@@ -111,8 +102,16 @@ class BinaryConverter(Frame):
         self.process_button.grid(row=0, column=5, sticky="w")
 
     def _processImage(self):
-        self._processedData = self._imagedata.binariseImage(self.threshValue.get())
-        self._display(self.canvasRight, self._processedData.dataForDisplay())
+        try:
+
+            self._processedData = self._imagedata.binariseImage(self.threshValue.get())
+            self._display(self.canvasRight, self._processedData.dataForDisplay())
+        except TclError:
+            showerror("Invalid input", "Please enter a nunber (0-255) in the entry box")
+        except AttributeError:
+            showerror("Image not loaded", "Please load the image first.")
+        except:
+            showerror("Ooops", "Oh fish! Something wasn't right!! Please bear with us")
 
 
     def _display(self, canvas, inputPts): 

@@ -22,11 +22,11 @@ class ColourImage(GUIconnect):
         return int(threshold)
 
     def binariseImage(self, threshold):
-        pass
-        # Your "Process" Button should call this method.
-        # the "threshold" argument is the value extracted from the entry box in your GUI.
-        # This method must return an object of type BinaryImage
-        # return ???
+        binaryList = []
+        for x, y, r, g, b in self._newList:
+            binaryList.append((x, y, 0 if ((r+g+b)/3 < threshold) else 1))
+
+        return BinaryImage(binaryList)
 
     def dataForDisplay(self):
         dataList = []

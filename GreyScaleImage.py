@@ -27,7 +27,7 @@ class GreyScaleImage(GUIconnect):
         for x, y, v in self._newList:
             binaryList.append((x, y, 0 if (v < threshold) else 1))
 
-        return
+        return BinaryImage(binaryList)
         # the "threshold" argument is the value extracted from the entry box in your GUI.
         # This method must return an object of type BinaryImage
         # return ???
