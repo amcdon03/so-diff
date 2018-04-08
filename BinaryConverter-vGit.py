@@ -1,7 +1,6 @@
-from tkinter import Frame, Canvas, Label, Button, Entry, Menu  #include more tkinter widgets here
+from tkinter import Frame, Canvas, Label, Button, Entry, Menu, IntVar  #include more tkinter widgets here
 from tkinter import filedialog
 
-from GUIconnect import GUIconnect
 from GreyScaleImage import GreyScaleImage
 from ColourImage import ColourImage
 from BinaryImage import BinaryImage
@@ -10,7 +9,7 @@ from BinaryImage import BinaryImage
 CANVAS_SIZE = 500  # Square region size used to display images
 
 ## GUI for binary image creator
-class BinaryConverter(Frame, GUIconnect):
+class BinaryConverter(Frame):
     """An image binarisation program to simplify/reduce the size of image files"""
 
     # constructor
@@ -23,9 +22,9 @@ class BinaryConverter(Frame, GUIconnect):
 
         # initialise variables
         self.text = ""
-        self._imagedata = [GreyScaleImage, ColourImage]     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage.
+        self._imagedata = None     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage.
                                                             # This will not change until a new data file is loaded.
-        self._processedData = BinaryImage() # Store here a BinaryImage object that is the result of binarising the loaded data.
+        self._processedData = None # Store here a BinaryImage object that is the result of binarising the loaded data.
         self._pixelSize = 2        # This is used to size the pixels in our display. See method _display()
 
               
@@ -43,17 +42,31 @@ class BinaryConverter(Frame, GUIconnect):
     # Methods for widgets available
 
     def _openFile(self):
+        values = []
+
         self.filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
         self.file_label.config(text=self.filename)
 
-        self._imagedata = GreyScaleImage(self.filename)
+        with open(self.filename, "r") as inFile:
+            lines = inFile.readlines()
+
+            for line in lines[1:]:
+                itemList = line.split(",")
+                for each_item in itemList:
+                    values.append(int(each_item))
+
+            if lines[0].strip() == "Greyscale Image":
+                self._imagedata = GreyScaleImage(values)
+            elif lines[0].strip() == "Colour Image":
+                self._imagedata = ColourImage(values)
+
+
+
         self._display(self.canvasLeft, self._imagedata.dataForDisplay())
-        self._imagedata = ColourImage(self._filename)
-        self._display(self.canvasLeft, self._imagedata.dataForDisplay())
-         
+        self.threshValue.set(self._imagedata.getThreshold())
 
     def _saveFile(self):
-        self.filename = filedialog.asksaveasfilename()
+        self.filename = filedialog.asksaveasfilename(initialdir = "/", title="Please select a filename for saving:", filetypes=(("Text files", ".txt"),("All files", "*.*")), defaultextension=".txt")
 
 
 
@@ -89,13 +102,19 @@ class BinaryConverter(Frame, GUIconnect):
         self.threshold_label = Label(text="Select Threshold (0-255)")
         self.threshold_label.grid(row=0, column=3, sticky="e")
 
-        self.entry_area = Entry(self.master, width=5)
+        self.threshValue = IntVar()
+        self.entry_area = Entry(self.master, width=5, textvariable=self.threshValue)
         self.entry_area.grid(row=0, column=4, sticky="e", padx=5)
 
-        self.process_button = Button(self.master, text="Process", command=self.binariseImage)
+
+        self.process_button = Button(self.master, text="Process", command=self._processImage)
         self.process_button.grid(row=0, column=5, sticky="w")
 
-               
+    def _processImage(self):
+        self._processedData = self._imagedata.binariseImage(self.threshValue.get())
+        self._display(self.canvasRight, self._processedData.dataForDisplay())
+
+
     def _display(self, canvas, inputPts): 
           s = self._pixelSize # renaming so that the last line of this method is shorter and easier to read
           for pt in inputPts:

@@ -3,27 +3,23 @@ from BinaryImage import BinaryImage
 
 class ColourImage(GUIconnect):
 
-    def __init__(self, filename):
-        self._data = []  ###convert to int() here?? No!!
+    def __init__(self, values):
+        self._newList = []
 
-        with open(filename, "r") as inFile:
-            values = inFile.readlines() #Process here?
-            if values[0].strip() != "ColourImage":
-                raise NotImplementedError("invalid input; choices are binary, greyscale or colour")
+        for i in range(0, len(values), 5):
+            self._newList.append(values[i: i + 5])
 
-            for line in values[1:]:
-                new_line = line.split(",")
-                for item in new_line:
-                    self._data.append(item)
 
     def _determineColorValue(self, r, g, b):
         return ("#%02x%02x%02x" % (r, g, b))
 
     def getThreshold(self):
-        pass
-        # t = (r+g+b)/items   # ie. avg of all rgb values for the image
-        ### convert to int() here??
-        # return threshold
+        vs = []
+
+        for _,_,r,g,b in self._newList:
+            vs+=[(r+g+b)/3]
+        threshold = sum(vs)/len(vs)
+        return int(threshold)
 
     def binariseImage(self, threshold):
         pass
@@ -33,7 +29,7 @@ class ColourImage(GUIconnect):
         # return ???
 
     def dataForDisplay(self):
-        pass
-        # This method returns the data in a form that can be displayed.
-        # It will be passed as the parameter "inputPts" to the method _display() in the class BinaryConverter
-        # return self._data ie: int(x), int(y), str(b)
+        dataList = []
+        for x, y, r, g, b in self._newList:
+            dataList.append((x, y, self._determineColorValue(r, g, b)))
+        return dataList

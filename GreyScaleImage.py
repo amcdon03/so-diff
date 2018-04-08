@@ -3,41 +3,40 @@ from BinaryImage import BinaryImage
 
 class GreyScaleImage(GUIconnect):
 
-    def __init__(self, filename):
-        self._values = []
+    def __init__(self, values):
         self._newList = []
 
-        with open(filename, "r") as inFile:
-            lines = inFile.readlines()
-            if lines[0].strip() != "GreyscaleImage":
-                raise NotImplementedError("invalid input; image is not grey scale")
+        for i in range(0, len(values), 3):
+            self._newList.append(values[i: i + 3])
 
-            for line in lines[1:]:
-                itemList = line.split(",")
-                for each_item in itemList:
-                    self._values.append(int(each_item))
         
 
     def _determineColorValue(self,v):
             return ("#%02x%02x%02x" % (v, v, v))
 
-    def _getThreshold(self):
-        for i in range(0, len(self._values), 3):
-            self._newList.append(self._values[i: i+3])
-            for v in self._newList[_, _, v]:
-                threshold = sum(self._newList[v]/len(self._newList))
-        return threshold
+    def getThreshold(self):
+        vs = []
 
-    def _binariseImage(self, threshold):
-        pass
-        # Your "Process" Button should call this method.
+        for _,_,v in self._newList:
+            vs+=[v]
+        threshold = sum(vs)/len(vs)
+        return int(threshold)
+
+    def binariseImage(self, threshold):
+        binaryList = []
+        for x, y, v in self._newList:
+            binaryList.append((x, y, 0 if (v < threshold) else 1))
+
+        return
         # the "threshold" argument is the value extracted from the entry box in your GUI.
         # This method must return an object of type BinaryImage
         # return ???
 
-    def _dataForDisplay(self):
-        for x, y, v in self.values:
-            return x, y, self._determineColorValue(v)
+    def dataForDisplay(self):
+        dataList = []
+        for x, y, v in self._newList:
+            dataList.append((x, y, self._determineColorValue(v)))
+        return dataList
 
         # This method returns the data in a form that can be displayed.
         # It will be passed as the parameter "inputPts" to the method _display() in the class BinaryConverter
