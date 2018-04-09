@@ -1,3 +1,6 @@
+## Angelina McDonald, MSc IT T2CW2, Submission date: 9 April 2018
+
+
 from GUIconnect import GUIconnect
 from BinaryImage import BinaryImage
 

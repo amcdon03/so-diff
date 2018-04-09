@@ -1,34 +1,33 @@
-from tkinter import Frame, Canvas, Label, Button, Entry, Menu, IntVar, TclError  #include more tkinter widgets here
+## Angelina McDonald, MSc IT T2CW2, Submission date: 9 April 2018
+
+from tkinter import Frame, Canvas, Label, Button, Entry, Menu, IntVar, TclError
 from tkinter import filedialog
 from tkinter.messagebox import showerror
 
 from GreyScaleImage import GreyScaleImage
 from ColourImage import ColourImage
-from BinaryImage import BinaryImage
 
 
-CANVAS_SIZE = 500  # Square region size used to display images
+CANVAS_SIZE = 500  # Constant variable - value repeatedly used to identify canvas size
 
 ## GUI for binary image creator
 class BinaryConverter(Frame):
     """An image binarisation program to simplify/reduce the size of image files"""
 
-    # constructor
     def __init__(self, master=None):
 
         Frame.__init__(self, master)
-        self.grid()  # use the grid manager
+        self.grid()
         self._addMenu()
         self._addProcessWidgets()
 
-        # initialise variables
+        # set the initial attibute values
         self.text = ""
-        self._imagedata = None     # Store here the loaded Image Data, i.e. an object of class GreyScaleImage or ColourImage.
-                                                            # This will not change until a new data file is loaded.
-        self._processedData = None # Store here a BinaryImage object that is the result of binarising the loaded data.
-        self._pixelSize = 2        # This is used to size the pixels in our display. See method _display()
+        self._imagedata = None
+        self._processedData = None
+        self._pixelSize = 2
 
-              
+        # set up the container with size and title
         self.master.title("Binary Image Creator")
         self.master.minsize(width=CANVAS_SIZE*2, height=CANVAS_SIZE)
 
@@ -39,16 +38,16 @@ class BinaryConverter(Frame):
         self.canvasRight.grid(row=1, column=3, columnspan=3)
 
 
-
     # Methods for widgets available
 
+    ## Opens file. If file not present, raise error.
     def _openFile(self):
         try:
             values = []
             filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
             self.file_label.config(text=filename)
 
-
+            # Open appropriate text file as object for reading and transform into Python-ready list
             with open(filename, "r") as inFile:
                 lines = inFile.readlines()
 
@@ -62,19 +61,23 @@ class BinaryConverter(Frame):
                 elif lines[0].strip() == "Colour Image":
                     self._imagedata = ColourImage(values)
 
+            # Call dataForDisplay and getThreshold methods on imagedata object
+            # Display object and suggested transformation value
             self._display(self.canvasLeft, self._imagedata.dataForDisplay())
             self.threshValue.set(self._imagedata.getThreshold())
+        except ValueError:
+            showerror("Invalid input", "Please load comma deliminated document of the correct file type.")
         except:
-            showerror("Ooops", "Oh fish! Something wasn't right!! Please bear with us")
+            showerror("Ooops", "Oh fish! Something wasn't right! Please bear with us.")
 
     def _saveFile(self):
         try:
             filename = filedialog.asksaveasfilename(initialdir = "/", title="Please select a filename for saving:", filetypes=(("Text files", ".txt"),("All files", "*.*")), defaultextension=".txt")
             self._processedData.saveImage(filename)
         except:
-            showerror("Ooops", "Oh fish! Something wasn't right!! Please bear with us")
+            showerror("Ooops", "Oh fish! Something wasn't right! Please bear with us.")
 
-
+    # Create menu bar with dropdown elements
     def _addMenu(self):
         self.menubar = Menu(self)
         self.master["menu"] = self.menubar
@@ -85,7 +88,7 @@ class BinaryConverter(Frame):
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=quit)
 
-
+    # Create the event tools on the window
     def _addProcessWidgets(self):
         self.file_label = Label(text="No file selected yet")
         self.file_label.grid(row=0, column=0, columnspan=3)
@@ -97,13 +100,11 @@ class BinaryConverter(Frame):
         self.entry_area = Entry(self.master, width=5, textvariable=self.threshValue)
         self.entry_area.grid(row=0, column=4, sticky="e", padx=5)
 
-
         self.process_button = Button(self.master, text="Process", command=self._processImage)
         self.process_button.grid(row=0, column=5, sticky="w")
 
     def _processImage(self):
         try:
-
             self._processedData = self._imagedata.binariseImage(self.threshValue.get())
             self._display(self.canvasRight, self._processedData.dataForDisplay())
         except TclError:
@@ -111,7 +112,7 @@ class BinaryConverter(Frame):
         except AttributeError:
             showerror("Image not loaded", "Please load the image first.")
         except:
-            showerror("Ooops", "Oh fish! Something wasn't right!! Please bear with us")
+            showerror("Ooops", "Oh fish! Something wasn't right! Please bear with us.")
 
 
     def _display(self, canvas, inputPts): 
