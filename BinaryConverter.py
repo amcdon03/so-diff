@@ -1,7 +1,8 @@
 ## Angelina McDonald, MSc IT T2CW2, Submission date: 9 April 2018
 
-from tkinter import Frame, Canvas, Label, Button, Entry, Menu, IntVar, TclError
-from tkinter import filedialog
+from tkinter import Frame, Canvas, Menu, IntVar
+from tkinter.ttk import Label, Button, Entry
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import showerror
 
 from GreyScaleImage import GreyScaleImage
@@ -32,21 +33,32 @@ class BinaryConverter(Frame):
         # Set the canvas size and title of the Frame structure
         self.master.title("Binary Image Creator")
         self.master.minsize(width=CANVAS_SIZE*2, height=CANVAS_SIZE)
-
         # Create canvas area for displaying text / graphical objects
         self.canvasLeft = Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE, bg="#FFAAFF")
-        self.canvasLeft.grid(row=1, column=0, columnspan=3)
+        self.canvasLeft.grid(row=1, column=0)
         self.canvasRight = Canvas(width=CANVAS_SIZE, height=CANVAS_SIZE, bg="#AAAAFF")
-        self.canvasRight.grid(row=1, column=3, columnspan=3)
+        self.canvasRight.grid(row=1, column=1, columnspan=3)
 
 
-    # Methods for widgets available
+## Methods for widgets in the program
 
-    ## Opens file. If file not present, raise error.
+    # Create menu bar with dropdown elements
+    def _addMenu(self):
+        self.menubar = Menu(self)
+        self.master["menu"] = self.menubar
+        self.filemenu = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="File", menu=self.filemenu)
+        self.filemenu.add_command(label="Load", command=self._openFile)
+        self.filemenu.add_command(label="Save", command=self._saveFile)
+        self.filemenu.add_separator()
+        self.filemenu.add_command(label="Exit", command=quit)
+
+
+    # Opens file and if file not present, raise error
     def _openFile(self):
         try:
             values = []
-            filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
+            filename = askopenfilename(initialdir = "/", title = "Select file", filetypes = (("Text files","*.txt"),("All files","*.*")))
             self.file_label.config(text=filename)
 
             # Open appropriate text file as object for reading and transform into Python-ready list
@@ -55,7 +67,7 @@ class BinaryConverter(Frame):
 
                 # Create a list containing just the values from the file container
                 for eachLine in linesList[1:]:
-                    itemsLine = eachLine.split(",") # separates each item in a line
+                    itemsLine = eachLine.split(",")  # separates each item in a line
                     for each_item in itemsLine:
                         values.append(int(each_item))   # file items need to be converted to integer
 
@@ -70,49 +82,37 @@ class BinaryConverter(Frame):
             self._display(self.canvasLeft, self._imagedata.dataForDisplay())
             self.threshValue.set(self._imagedata.getThreshold())
         except ValueError:
-            showerror("Invalid input", "Please load comma deliminated document of the correct file type.")
+            showerror("Invalid input", "Please load comma delimited document of the correct file type.")
         except:
-            showerror("Ooops", "Oh fish! Something wasn't right! Please bear with us.")
+            showerror("Ooops", "Something wasn't right! Please bear with us.")
 
-    # Saves a processed object a filename. If has not been created, raises an error.
+    # Saves a processed object a filename and if has not been created raises an error
     def _saveFile(self):
         try:
-            filename = filedialog.asksaveasfilename(initialdir = "/", title="Please select a filename for saving:", filetypes=(("Text files", ".txt"),("All files", "*.*")), defaultextension=".txt")
+            filename = asksaveasfilename(initialdir = "/", title="Please select a filename for saving:", filetypes=(("Text files", ".txt"),("All files", "*.*")), defaultextension=".txt")
             self._processedData.saveImage(filename)
         except:
-            showerror("Ooops", "Oh fish! Something wasn't right! Please bear with us.")
-
-
-    # Create menu bar with dropdown elements
-    def _addMenu(self):
-        self.menubar = Menu(self)
-        self.master["menu"] = self.menubar
-        self.filemenu = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
-        self.filemenu.add_command(label="Load", command = self._openFile)
-        self.filemenu.add_command(label="Save", command = self._saveFile)
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=quit)
+            showerror("Ooops", "Something wasn't right! Please bear with us.")
 
 
     # Create the event tools on the window
     def _addProcessWidgets(self):
         self.file_label = Label(text="No file selected yet")
-        self.file_label.grid(row=0, column=0, columnspan=3)
+        self.file_label.grid(row=0, column=0)
 
         self.threshold_label = Label(text="Select Threshold (0-255)")
-        self.threshold_label.grid(row=0, column=3, sticky="e")
+        self.threshold_label.grid(row=0, column=1, sticky="e")
 
         self.threshValue = IntVar()
-        self.entry_area = Entry(self.master, width=5, textvariable=self.threshValue)
-        self.entry_area.grid(row=0, column=4, sticky="e", padx=5)
+        self.entry_area = Entry(self.master, textvariable=self.threshValue)
+        self.entry_area.grid(row=0, column=2)
 
         self.process_button = Button(self.master, text="Process", command=self._processImage)
-        self.process_button.grid(row=0, column=5, sticky="w")
+        self.process_button.grid(row=0, column=3, sticky="w")
 
 
-    # Bind button press to the binarisation process using the threshold value in the entry box
-    # The resultant binarised image will be displayed in the right-hand canvas
+    ## Bind button press to the binarisation process using the threshold value in the entry box
+    # The binarised image will be displayed in the right-hand canvas
     # Raises and error, in particular, if an Entry number is not given/is erased, or
     # if image has not been loaded before pressing 'Process'.
     def _processImage(self):
@@ -122,9 +122,9 @@ class BinaryConverter(Frame):
         except TclError:
             showerror("Invalid input", "Please enter a number (0-255) in the entry box")
         except AttributeError:
-            showerror("Image not loaded", "Please load the image first.")
+            showerror("Image missing", "Please load an image.")
         except:
-            showerror("Ooops", "Oh fish! Something wasn't right! Please bear with us.")
+            showerror("Ooops", "Something wasn't right! Please bear with us.")
 
 
     def _display(self, canvas, inputPts):
